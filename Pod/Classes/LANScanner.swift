@@ -61,7 +61,6 @@ open class LANScanner: NSObject {
     open var delegate: LANScannerDelegate?
     open var continuous:Bool = true
     
-    
     var localAddress: String?
     var baseAddress: String?
     var currentHostAddress: Int = 0
@@ -103,7 +102,7 @@ open class LANScanner: NSObject {
                     self.baseAddressEnd = 255
                 }
                 
-                self.timer = Timer.scheduledTimer(timeInterval: 0.4, target: self, selector: #selector(LANScanner.pingAddress), userInfo: nil, repeats: true)
+                self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(LANScanner.pingAddress), userInfo: nil, repeats: true)
             }
         }
         else {
