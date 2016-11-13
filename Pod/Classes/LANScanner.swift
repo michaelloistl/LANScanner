@@ -39,6 +39,9 @@ import UIKit
      Triggered when there is an error while scanning
      */
     @objc optional func LANScannerFailed(_ error: NSError)
+    
+    
+    @objc optional func LANScannerProgress(_ progress: Float)
 }
 
 open class LANScanner: NSObject {
@@ -120,7 +123,12 @@ open class LANScanner: NSObject {
         
         self.currentHostAddress += 1
         let address:String = "\(self.baseAddress!)\(self.currentHostAddress)"
+        
+        let progress: Float = Float(self.currentHostAddress) / 254
+        delegate?.LANScannerProgress?(progress)
+        
         SimplePingHelper.start(address, target: self, selector: #selector(LANScanner.pingResult(_:)))
+        
         if self.currentHostAddress >= 254 && !continuous {
             self.timer?.invalidate()
         }
