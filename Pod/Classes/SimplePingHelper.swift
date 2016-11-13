@@ -30,7 +30,8 @@ class SimplePingHelper: NSObject, SimplePingDelegate {
         
         super.init()
         
-        self.simplePing!.delegate = self
+        self.simplePing?.delegate = self
+        self.simplePing?.addressStyle = .icmPv4
     }
     
     func start() {
@@ -77,16 +78,24 @@ class SimplePingHelper: NSObject, SimplePingDelegate {
         self.simplePing?.send(with: nil)
     }
     
-    func simplePing(_ pinger: SimplePing!, didFailWithError error: Error!) {
-        self.failPing("didFailWithError")
+    func simplePing(_ pinger: SimplePing, didSendPacket packet: Data, sequenceNumber: UInt16) {
+
     }
     
-    func simplePing(_ pinger: SimplePing!, didFailToSendPacket packet: Data!, error: Error!) {
-        self.failPing("didFailToSendPacked")
-    }
-    
-    func simplePing(_ pinger: SimplePing!, didReceivePingResponsePacket packet: Data!) {
+    func simplePing(_ pinger: SimplePing, didReceivePingResponsePacket packet: Data, sequenceNumber: UInt16) {
         self.successPing()
     }
     
+    func simplePing(_ pinger: SimplePing, didReceiveUnexpectedPacket packet: Data) {
+
+    }
+
+    func simplePing(_ pinger: SimplePing, didFailWithError error: Error) {
+        self.failPing("didFailWithError")
+    }
+    
+    func simplePing(_ pinger: SimplePing, didFailToSendPacket packet: Data, sequenceNumber: UInt16, error: Error) {
+        self.failPing("didFailToSendPacked")
+    }
 }
+
