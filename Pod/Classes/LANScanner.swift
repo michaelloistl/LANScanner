@@ -46,8 +46,14 @@ import UIKit
 
 open class LANScanner: NSObject {
     
+    public enum IPType {
+        case ipv4
+        case ipv6
+    }
+    
     public struct NetInfo {
         public let ip: String
+        public let ipType: IPType
         public let netmask: String
     }
     
@@ -79,6 +85,7 @@ open class LANScanner: NSObject {
     
     // MARK: - Actions
     open func startScan() {
+    open func startScan(ipType: IPType = .ipv4) {
         
         if let localAddress = LANScanner.getLocalAddress() {
             
