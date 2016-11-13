@@ -84,11 +84,9 @@ open class LANScanner: NSObject {
     }
     
     // MARK: - Actions
-    open func startScan() {
     open func startScan(ipType: IPType = .ipv4) {
         
-        if let localAddress = LANScanner.getLocalAddress() {
-            
+        if let localAddress = LANScanner.getLocalAddresses().filter({ $0.ipType == ipType }).first {
             self.localAddress = localAddress.ip
             self.netMask = localAddress.netmask
             
@@ -204,8 +202,8 @@ open class LANScanner: NSObject {
         return hostName
     }
     
-    open static func getLocalAddress() -> NetInfo? {
-        var localAddress:NetInfo?
+    open static func getLocalAddresses() -> [NetInfo] {
+        var localAddresses = [NetInfo]()
         
         /// Get list of all interfaces on the local machine:
         var ifaddr : UnsafeMutablePointer<ifaddrs>? = nil
@@ -239,7 +237,8 @@ open class LANScanner: NSObject {
                                     if getnameinfo(&net, socklen_t(net.sa_len), &netmaskName, socklen_t(netmaskName.count),
                                                    nil, socklen_t(0), NI_NUMERICHOST) == 0 {
                                         if let netmask = String(validatingUTF8: netmaskName) {
-                                            localAddress = NetInfo(ip: address, netmask: netmask)
+                                            let ipType: IPType = (isIPv4Address(address)) ? .ipv4 : .ipv6
+                                            localAddresses.append(NetInfo(ip: address, ipType: ipType, netmask: netmask))
                                         }
                                     }
                                 }
@@ -251,10 +250,16 @@ open class LANScanner: NSObject {
             }
             freeifaddrs(ifaddr)
         }
-        return localAddress
+        return localAddresses
     }
     
     func addressParts(_ address: String) -> [String] {
         return address.components(separatedBy: ".")
+    }
+    
+    class func isIPv4Address(_ address: String) -> Bool {
+        let parts = address.components(separatedBy: ".")
+        let nums = parts.flatMap { Int($0) }
+        return parts.count == 4 && nums.count == 4 && nums.filter { $0 >= 0 && $0 < 256}.count == 4
     }
 }
